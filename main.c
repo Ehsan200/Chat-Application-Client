@@ -58,8 +58,6 @@ void Channel() {
     printf("2: Join Channel\n");
     purple();
     printf("3: Logout\n");
-    purple();
-    printf("4 : clear\n");
     scanf("%d", &Channel_Num);
     switch (Channel_Num){
         case 1:
@@ -73,8 +71,6 @@ void Channel() {
             logout();
             Login_Register();
             break;
-        case 4:
-            clear();
     }
 }
 void logout(){
