@@ -19,7 +19,27 @@ void Members();
 void Leave();
 void ConnectToServer();
 void logout();
+void find_users();
+void find_messages();
 
+void red(){
+    system("color 04");
+}
+void blue(){
+    system("color 01");
+}
+void green(){
+    system("color 02");
+}
+void yellow(){
+    system("color 06");
+}
+void purple(){
+    system("color 05");
+}
+void clear(){
+    system("@cls||clear");
+}
 char Token[200];
 int client_socket;
 struct sockaddr_in servaddr;
@@ -32,9 +52,14 @@ int main() {
 
 void Channel() {
     int Channel_Num;
+    purple();
     printf("1: Create Channel\n");
+    purple();
     printf("2: Join Channel\n");
+    purple();
     printf("3: Logout\n");
+    purple();
+    printf("4 : clear\n");
     scanf("%d", &Channel_Num);
     switch (Channel_Num){
         case 1:
@@ -47,6 +72,9 @@ void Channel() {
         case 3:
             logout();
             Login_Register();
+            break;
+        case 4:
+            clear();
     }
 }
 void logout(){
@@ -60,8 +88,10 @@ void logout(){
 void Login() {
     char *UserName = (char *) calloc(100, sizeof(char));
     char *PassWord = (char *) calloc(100, sizeof(char));
+    blue();
     printf("please login:\nEnter Username\n");
     scanf("%s", UserName);
+    blue();
     printf("Enter Password\n");
     scanf("%s", PassWord);
     int n = 6;
@@ -75,6 +105,7 @@ void Login() {
     memset(buffer, 0, sizeof(buffer));
     recv(client_socket, buffer, sizeof(buffer), 0);
     if (!strcmp(cJSON_GetObjectItem(cJSON_Parse(buffer), "type")->valuestring, "Error")) {
+        red();
         printf("%s\n", cJSON_GetObjectItem(cJSON_Parse(buffer), "content")->valuestring);
         Login_Register();
     } else {
@@ -88,8 +119,10 @@ void Login() {
 void Register() {
     char *UserName = (char *) calloc(100, sizeof(char));
     char *PassWord = (char *) calloc(100, sizeof(char));
+    blue();
     printf("Enter Username\n");
     scanf("%s", UserName);
+    blue();
     printf("Enter Password\n");
     scanf("%s", PassWord);
     int n = 9;
@@ -105,9 +138,12 @@ void Register() {
     memset(buffer, 0, sizeof(buffer));
     recv(client_socket, buffer, sizeof(buffer), 0);
     if (!strcmp(cJSON_GetObjectItem(cJSON_Parse(buffer), "type")->valuestring, "Error")) {
+        red();
         printf("%s\n", cJSON_GetObjectItem(cJSON_Parse(buffer), "content")->valuestring);
         Login_Register();
     }
+    clear();
+    green();
     printf("Registeration was successful\n");
     free(UserName);
     free(PassWord);
@@ -116,8 +152,11 @@ void Register() {
 
 void Login_Register() {
     int Register_or_Login_Num;
+    blue();
     printf("Account Menu:\n");
+    blue();
     printf("1: Register\n");
+    blue();
     printf("2: Login\n");
     scanf("%d", &Register_or_Login_Num);
     switch(Register_or_Login_Num){
@@ -134,6 +173,7 @@ void Login_Register() {
 void Creat_Channel() {
     char *Channel_name = (char *) calloc(1000, sizeof(char));
     char buffer[2000] = "create channel ";
+    yellow();
     printf("please Enter Channel name:\n");
     scanf("%s", Channel_name);
     int n = 15;
@@ -148,6 +188,7 @@ void Creat_Channel() {
     memset(buffer, 0, sizeof(buffer));
     recv(client_socket, buffer, sizeof(buffer), 0);
     if (!strcmp(cJSON_GetObjectItem(cJSON_Parse(buffer), "type")->valuestring, "Error")) {
+        red();
         printf("%s\n", cJSON_GetObjectItem(cJSON_Parse(buffer), "content")->valuestring);
         Creat_Channel();
     }
@@ -158,6 +199,7 @@ void Creat_Channel() {
 void join_Channel() {
     char* Channel_name = (char *) calloc(1000, sizeof(char));
     char buffer[2000] = "join channel ";
+    yellow();
     printf("please Enter Channel name:\n");
     scanf("%s", Channel_name);
     int n = 13;
@@ -172,20 +214,30 @@ void join_Channel() {
     memset(buffer, 0, sizeof(buffer));
     recv(client_socket, buffer, sizeof(buffer), 0);
     if (!strcmp(cJSON_GetObjectItem(cJSON_Parse(buffer), "type")->valuestring, "Error")) {
+        red();
         printf("%s\n", cJSON_GetObjectItem(cJSON_Parse(buffer), "content")->valuestring);
         Channel();
     }
     free(Channel_name);
-    return;
 }
 
 void Chat_Room() {
     while (1) {
         int Chat_Num;
+        purple();
         printf("1: Send Message\n");
+        purple();
         printf("2: Refresh\n");
+        purple();
         printf("3: Channel Members\n");
-        printf("4: Leave Channel\n");
+        purple();
+        printf("4: find users\n");
+        purple();
+        printf("5: find messages\n");
+        purple();
+        printf("6: clear\n");
+        purple();
+        printf("7: Leave Channel\n");
         scanf("%d", &Chat_Num);
         switch (Chat_Num) {
             case 1:
@@ -198,8 +250,16 @@ void Chat_Room() {
                 Members();
                 break;
             case 4:
-                Leave();
+                find_users();
                 break;
+            case 5:
+                find_messages();
+                break;
+            case 6:
+                clear();
+                break;
+            case 7:
+                Leave();
         }
     }
 }
@@ -208,6 +268,8 @@ void Send_Message() {
     char Message[1000 * 100 + 1];
     char buffer[101000] = "send ";
     int n = 5;
+    clear();
+    yellow();
     printf("your message:\n");
     gets(Message);
     gets(Message);
@@ -219,7 +281,6 @@ void Send_Message() {
     send(client_socket, buffer, sizeof(buffer), 0);
     memset(buffer, 0, sizeof(buffer));
     recv(client_socket, buffer, sizeof(buffer), 0);
-    return;
 }
 
 void Refresh() {
@@ -234,11 +295,12 @@ void Refresh() {
     cJSON *content = cJSON_GetObjectItem(h, "content");
     cJSON_ArrayForEach(i, content) {
         if (strcmp(cJSON_GetObjectItem(i, "sender") -> valuestring, "server")) {
+            purple();
             printf("%s :", cJSON_GetObjectItem(i, "sender") -> valuestring);
+            purple();
             printf("%s\n", cJSON_GetObjectItem(i, "content") -> valuestring);
         }
     }
-    return;
 }
 
 void Members() {
@@ -249,11 +311,12 @@ void Members() {
     send(client_socket, buffer, sizeof(buffer), 0);
     recv(client_socket, buffer, sizeof(buffer), 0);
     cJSON *h = cJSON_Parse(buffer);
+    printf("members : \n");
     cJSON *content = cJSON_GetObjectItem(h, "content");
     for (int j = 0; j < cJSON_GetArraySize(content); j++) {
+        purple();
         printf("%s\n", cJSON_GetArrayItem(content, j) -> valuestring);
     }
-    return;
 }
 
 void Leave() {
@@ -264,12 +327,62 @@ void Leave() {
     send(client_socket, buffer, sizeof(buffer), 0);
     recv(client_socket, buffer, sizeof(buffer), 0);
     if (!strcmp(cJSON_GetObjectItem(cJSON_Parse(buffer), "type")->valuestring, "Error")) {
+        red();
         printf("%s\n", cJSON_GetObjectItem(cJSON_Parse(buffer), "content")->valuestring);
         Chat_Room();
     }
     Channel();
 }
 
+void find_users(){
+    char buffer[200] = "find_user ";
+    char username[200];
+    yellow();
+    printf("please enter username : \n");
+    scanf("%s",username);
+    strcpy(buffer + 10 , username);
+    strcat(buffer , " ");
+    strcat(buffer , Token);
+    strcat(buffer , "\n");
+    ConnectToServer();
+    send(client_socket , buffer , sizeof(buffer) , 0);
+    recv(client_socket, buffer, sizeof(buffer), 0);
+    yellow();
+    printf("%s\n",buffer);
+}
+
+void find_messages(){
+    char buffer[500] = "find_message ";
+    char message[420];
+    yellow();
+    printf("please enter your message to find it : \n");
+    gets(message);
+    gets(message);
+    strcpy(buffer + 13 , message);
+    strcat(buffer , ", ");
+    strcat(buffer , Token);
+    strcat(buffer , "\n");
+    ConnectToServer();
+    send(client_socket , buffer , sizeof(buffer) , 0);
+    recv(client_socket, buffer, sizeof(buffer), 0);
+    cJSON *i = NULL;
+    cJSON *h = cJSON_Parse(buffer);
+    cJSON *content = cJSON_GetObjectItem(h, "content");
+    yellow();
+    printf("your saerch results : \n");
+    cJSON_ArrayForEach(i, content) {
+        if (strcmp(cJSON_GetObjectItem(i, "sender") -> valuestring, "server")) {
+            yellow();
+            printf("sender : ");
+            yellow();
+            printf("%s ", cJSON_GetObjectItem(i, "sender") -> valuestring);
+            yellow();
+            printf("full message : ");
+            yellow();
+            printf("%s\n", cJSON_GetObjectItem(i, "content") -> valuestring);
+        }
+    }
+}
 void ConnectToServer() {
     WORD wVersionRequested;
     WSADATA wsaData;
